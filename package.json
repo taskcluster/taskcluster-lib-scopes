@@ -2,7 +2,7 @@
   "name": "taskcluster-lib-scopes",
   "version": "0.8.8",
   "author": "Jonas Finnemann Jensen <jopsen@gmail.com>",
-  "description": "taskcluster-lib-scopes",
+  "description": "Scope checking utilities for TaskCluster",
   "license": "MPL-2.0",
   "scripts": {
     "compile": "babel-compile -c taskcluster-lib-rules/babel src:lib test:.test",
