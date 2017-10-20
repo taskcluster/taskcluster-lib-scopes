@@ -1,5 +1,6 @@
-var assert  = require('assert');
-var utils   = require('../lib/scopes.js');
+import assert from 'assert';
+import {isEqual} from 'lodash';
+import utils from '../lib/scopes.js';
 
 suite('validScope', function() {
   test('Normal-looking scopes are OK', function() {
@@ -99,3 +100,105 @@ suite('scopeMatch', function() {
     mktest(['foo:bar'], [], false));
 });
 
+suite('scopeIntersection', () => {
+  const fn = utils.scopeIntersection;
+
+  test('single exact match, [[string]]', () => {
+    const scope = ['foo:bar'];
+    const res = fn(scope, [scope]);
+
+    assert(isEqual(res, scope), `expected ${scope}`);
+  });
+
+  test('empty [string] in scopesets', () => {
+    const res = fn(['foo:bar'], [['']]);
+
+    assert(res.length === 0, 'expected an empty set');
+
+  });
+
+  test('prefix', () => {
+    const scope = ['foo:bar'];
+    const res = fn(['foo:*'], [scope]);
+
+    assert(isEqual(res, scope), `expected ${scope}`);
+  });
+
+  test('star not at end', () => {
+    const scope = ['foo:bar:bing'];
+    const res = fn(['foo:*:bing'], [scope]);
+
+    assert(isEqual(res, scope), `expected ${scope}`);
+  });
+
+  test('star at beginning', () => {
+    const scope = ['foo:bar'];
+    const res = fn(['*:bar'], [scope]);
+
+    assert(isEqual(res, scope), `expected ${scope}`);
+  });
+
+  test('prefix with no star', () => {
+    const scope = ['foo:'];
+    const res = fn(['foo:bar'], [scope]);
+
+    assert(isEqual(res, scope), `expected ${scope}`);
+  });
+
+  test('star but not prefix', () => {
+    const res = fn(['foo:bar:*'], [['bar:bing']]);
+
+    assert(isEqual(res, []), 'expected empty set');
+  });
+
+  test('star but not prefix', () => {
+    const res = fn(['bar:*'], [['foo:bar:bing']]);
+
+    assert(isEqual(res, []), 'expected empty set');
+  });
+
+  test('disjunction [strings]', () => {
+    const scope = ['bar:x'];
+    const res = fn(['bar:*'], [['foo:x'], scope]);
+
+    assert(isEqual(res, ['bar:x']), `expected ${scope}`);
+  });
+
+  test('conjuction', () => {
+    const scope = ['bar:y', 'foo:x'];
+    const res = fn(['bar:*', 'foo:x'], [scope]);
+
+    assert(isEqual(res, scope), `expected ${scope}`);
+  });
+
+  test('empty pattern', () => {
+    const res = fn([''], [['foo:bar']]);
+
+    assert(isEqual(res, []), 'expected empty set');
+  });
+
+  test('empty patterns', () => {
+    const res = fn([], [['foo:bar']]);
+
+    assert(isEqual(res, []), 'expected empty set');
+  });
+
+  test('bare star', () => {
+    const scope = ['foo:bar', 'bar:bing'];
+    const res = fn(['*'], [scope]);
+
+    assert(isEqual(res, scope), `expected ${scope}`);
+  });
+
+  test('empty conjunction in scopesets', () => {
+    const res = fn(['foo:bar'], [[]]);
+
+    assert(isEqual(res, []), 'expected empty set');
+  });
+
+  test('empty conjunction in scopesets', () => {
+    const res = fn(['foo:bar'], []);
+
+    assert(isEqual(res, []), 'expected empty set');
+  });
+});

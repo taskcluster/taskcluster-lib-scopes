@@ -24,6 +24,12 @@ exports.validateScopeSets = function(scopesets) {
   }), msg);
 };
 
+function validateScopePatterns(scopePatterns) {
+  assert(scopePatterns instanceof Array && scopePatterns.every((scope) => {
+    return typeof scope === 'string';
+  }), 'scopes must be an array of strings');
+}
+
 /**
  * Auxiliary function to check if scopePatterns satisfies a scope-set
  *
@@ -39,9 +45,8 @@ exports.validateScopeSets = function(scopesets) {
  */
 exports.scopeMatch = function(scopePatterns, scopesets) {
   exports.validateScopeSets(scopesets);
-  assert(scopePatterns instanceof Array && scopePatterns.every(function(scope) {
-    return typeof scope === 'string';
-  }), 'scopes must be an array of strings');
+  validateScopePatterns(scopePatterns);
+
   return scopesets.some(function(scopeset) {
     return scopeset.every(function(scope) {
       return scopePatterns.some(function(pattern) {
@@ -55,4 +60,48 @@ exports.scopeMatch = function(scopePatterns, scopesets) {
       });
     });
   });
+};
+
+/**
+ * Finds scope intersections between scopePatterns and scope-set
+ *
+ * Note that scope-set is an array of arrays of strings on negation-free
+ * disjunctive normal form.
+ *
+ */
+exports.scopeIntersection = (scopePatterns, scopesets) => {
+  exports.validateScopeSets(scopesets);
+  validateScopePatterns(scopePatterns);
+
+  const junctions = [];
+  const scopes = Array.prototype
+    .concat(...scopesets)
+    .filter(scope => scope);
+  const patterns = scopePatterns.filter(pattern => pattern);
+
+  patterns.forEach((p) => {
+    scopes.forEach((s) => {
+      let scope = s;
+      let pattern = p;
+      const patternStarIndex = pattern.indexOf('*');
+      const scopeStarIndex = scope.indexOf('*');
+      const patternHasStar = patternStarIndex > -1;
+      const scopeHasStar = scopeStarIndex > -1;
+
+      pattern = patternHasStar ? pattern.slice(0, patternStarIndex) : pattern;
+      scope = scopeHasStar ? scope.slice(0, scopeStarIndex) : scope;
+
+      const sorted = [scope, pattern].sort((a, b) => a.length - b.length);
+
+      if (pattern.indexOf(scope) === 0 || scope.indexOf(pattern) === 0) {
+        if (patternHasStar || scopeHasStar) {
+          junctions.push(sorted[1]);
+        } else {
+          junctions.push(sorted[0]);
+        }
+      }
+    });
+  });
+
+  return junctions;
 };
