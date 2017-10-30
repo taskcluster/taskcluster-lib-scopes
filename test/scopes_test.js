@@ -101,97 +101,105 @@ suite('scopeMatch', function() {
 });
 
 suite('scopeIntersection', () => {
-  const fn = utils.scopeIntersection;
+  const testScopeIntersection = (scope1, scope2, expected, message) => {
+    assert(isEqual(utils.scopeIntersection(scope1, scope2), expected), message);
+    assert(isEqual(utils.scopeIntersection(scope2, scope1), expected), message);
+  };
 
   test('single exact match, [string]', () => {
     const scope = ['foo:bar'];
-    const res = fn(scope, scope);
 
-    assert(isEqual(res, scope), `expected ${scope}`);
+    testScopeIntersection(scope, scope, scope, `expected ${scope}`);
   });
 
   test('empty [string] in scopesets', () => {
-    const res = fn(['foo:bar'], ['']);
+    const scope1 = ['foo:bar'];
+    const scope2 = [''];
 
-    assert(res.length === 0, 'expected an empty set');
-
+    testScopeIntersection(scope1, scope2, [], 'expected an empty set');
   });
 
   test('prefix', () => {
-    const scope = ['foo:bar'];
-    const res = fn(['foo:*'], scope);
+    const scope1 = ['foo:bar'];
+    const scope2 = ['foo:*'];
 
-    assert(isEqual(res, scope), `expected ${scope}`);
+    testScopeIntersection(scope1, scope2, scope1, `expected ${scope1}`);
   });
 
   test('star not at end', () => {
-    const scope = ['foo:bar:bing'];
-    const res = fn(['foo:*:bing'], scope);
+    const scope1 = ['foo:bar:bing'];
+    const scope2 = ['foo:*:bing'];
 
-    assert(isEqual(res, scope), `expected ${scope}`);
+    testScopeIntersection(scope1, scope2, scope1, `expected ${scope1}`);
   });
 
   test('star at beginning', () => {
-    const scope = ['foo:bar'];
-    const res = fn(['*:bar'], scope);
+    const scope1 = ['foo:bar'];
+    const scope2 = ['*:bar'];
 
-    assert(isEqual(res, scope), `expected ${scope}`);
+    testScopeIntersection(scope1, scope2, scope1, `expected ${scope1}`);
   });
 
   test('prefix with no star', () => {
-    const scope = ['foo:'];
-    const res = fn(['foo:bar'], scope);
+    const scope1 = ['foo:bar'];
+    const scope2 = ['foo:'];
 
-    assert(isEqual(res, scope), `expected ${scope}`);
+    testScopeIntersection(scope1, scope2, [], 'expected empty set');
   });
 
   test('star but not prefix', () => {
-    const res = fn(['foo:bar:*'], ['bar:bing']);
+    const scope1 = ['foo:bar:*'];
+    const scope2 = ['bar:bing'];
 
-    assert(isEqual(res, []), 'expected empty set');
+    testScopeIntersection(scope1, scope2, [], 'expected empty set');
   });
 
   test('star but not prefix', () => {
-    const res = fn(['bar:*'], ['foo:bar:bing']);
+    const scope1 = ['bar:*'];
+    const scope2 = ['foo:bar:bing'];
 
-    assert(isEqual(res, []), 'expected empty set');
+    testScopeIntersection(scope1, scope2, [], 'expected empty set');
   });
 
   test('disjunction', () => {
-    const res = fn(['bar:*'], ['foo:x', 'bar:x']);
+    const scope1 = ['bar:*'];
+    const scope2 = ['foo:x', 'bar:x'];
 
-    assert(isEqual(res, ['bar:x']), 'expected [\'bar:x\']');
+    testScopeIntersection(scope1, scope2, ['bar:x'], 'expected [\'bar:x\']');
   });
 
   test('conjuction', () => {
-    const scope = ['bar:y', 'foo:x'];
-    const res = fn(['bar:*', 'foo:x'], scope);
+    const scope1 = ['bar:y', 'foo:x'];
+    const scope2 = ['bar:*', 'foo:x'];
 
-    assert(isEqual(res, scope), `expected ${scope}`);
+    testScopeIntersection(scope1, scope2, scope1, `expected ${scope1}`);
   });
 
   test('empty pattern', () => {
-    const res = fn([''], ['foo:bar']);
+    const scope1 = [''];
+    const scope2 = ['foo:bar'];
 
-    assert(isEqual(res, []), 'expected empty set');
+    testScopeIntersection(scope1, scope2, [], 'expected empty set');
   });
 
   test('empty patterns', () => {
-    const res = fn([], ['foo:bar']);
+    const scope1 = [];
+    const scope2 = ['foo:bar'];
 
-    assert(isEqual(res, []), 'expected empty set');
+    testScopeIntersection(scope1, scope2, [], 'expected empty set');
   });
 
   test('bare star', () => {
-    const scope = ['foo:bar', 'bar:bing'];
-    const res = fn(['*'], scope);
+    const scope1 = ['foo:bar', 'bar:bing'];
+    const scope2 = ['*'];
 
-    assert(isEqual(res, scope), `expected ${scope}`);
+    testScopeIntersection(scope1, scope2, scope1, `expected ${scope1}`);
   });
 
   test('empty conjunction in scopesets', () => {
-    const res = fn(['foo:bar'], []);
+    const scope1 = ['foo:bar'];
+    const scope2 = [];
 
-    assert(isEqual(res, []), 'expected empty set');
+    testScopeIntersection(scope1, scope2, [], 'expected empty set');
   });
 });
