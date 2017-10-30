@@ -33,8 +33,7 @@ function validateScopePatterns(scopePatterns) {
 /**
  * Auxiliary function to check if scopePatterns satisfies a scope-set
  *
- * Note that scope-set is an array of arrays of strings on negation-free
- * disjunctive normal form. For example:
+ * Note that scopesets is an array of arrays of strings. For example:
  *  [['a', 'b'], ['c']]
  *
  * Is satisfied if either,
@@ -63,24 +62,18 @@ exports.scopeMatch = function(scopePatterns, scopesets) {
 };
 
 /**
- * Finds scope intersections between scopePatterns and scope-set
- *
- * Note that scope-set is an array of arrays of strings on negation-free
- * disjunctive normal form.
- *
+ * Finds scope intersections between two scope sets.
  */
-exports.scopeIntersection = (scopePatterns, scopesets) => {
-  exports.validateScopeSets(scopesets);
-  validateScopePatterns(scopePatterns);
+exports.scopeIntersection = (scopeset1, scopeset2) => {
+  validateScopePatterns(scopeset2);
+  validateScopePatterns(scopeset1);
 
   const junctions = [];
-  const scopes = Array.prototype
-    .concat(...scopesets)
-    .filter(scope => scope);
-  const patterns = scopePatterns.filter(pattern => pattern);
+  const scope1 = scopeset2.filter(s => s);
+  const scope2 = scopeset1.filter(s => s);
 
-  patterns.forEach((p) => {
-    scopes.forEach((s) => {
+  scope2.forEach((p) => {
+    scope1.forEach((s) => {
       let scope = s;
       let pattern = p;
       const patternStarIndex = pattern.indexOf('*');
