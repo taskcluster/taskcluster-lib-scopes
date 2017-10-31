@@ -64,31 +64,7 @@ exports.scopeMatch = function(scopePatterns, scopesets) {
 /**
  * Finds scope intersections between two scope sets.
  */
-exports.scopeIntersection = (scopeset1, scopeset2) => {
-  validateScopePatterns(scopeset2);
-  validateScopePatterns(scopeset1);
-
-  const junctions = [];
-  const scope1 = scopeset2.filter(s => s);
-  const scope2 = scopeset1.filter(s => s);
-
-  scope2.forEach((s2) => {
-    scope1.forEach((s1) => {
-      const star = '*';
-      const s1IndexOfStar = s1.indexOf(star);
-      const s2IndexOfStar = s2.indexOf(star);
-
-      if (s1 === s2) {
-        junctions.push(s1);
-      } else if (s1.slice(-1) === star && s1.slice(0, s1IndexOfStar) === s2.slice(0, s1IndexOfStar)) {
-        // s1 ends with * and s1 and s2 are equal up to the position of that *
-        junctions.push(s2);
-      } else if (s2.slice(-1) === star && s2.slice(0, s2IndexOfStar) === s1.slice(0, s2IndexOfStar)) {
-        // s2 ends with * and s2 and s1 are equal up to the position of that *
-        junctions.push(s1);
-      }
-    });
-  });
-
-  return junctions;
-};
+exports.scopeIntersection = (scopeset1, scopeset2) => [
+  ...scopeset1.filter(s => exports.scopeMatch(scopeset2, [[s]])),
+  ...scopeset2.filter(s => exports.scopeMatch(scopeset1, [[s]])),
+].filter((v, i, a) => a.indexOf(v) === i);

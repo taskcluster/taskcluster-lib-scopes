@@ -1,5 +1,4 @@
 import assert from 'assert';
-import {isEqual} from 'lodash';
 import utils from '../lib/scopes.js';
 
 suite('validScope', function() {
@@ -102,8 +101,8 @@ suite('scopeMatch', function() {
 
 suite('scopeIntersection', () => {
   const testScopeIntersection = (scope1, scope2, expected, message) => {
-    assert(isEqual(utils.scopeIntersection(scope1, scope2), expected), message);
-    assert(isEqual(utils.scopeIntersection(scope2, scope1), expected), message);
+    assert.deepEqual(utils.scopeIntersection(scope1, scope2).sort(), expected.sort(), message);
+    assert.deepEqual(utils.scopeIntersection(scope2, scope1).sort(), expected.sort(), message);
   };
 
   test('single exact match, [string]', () => {
