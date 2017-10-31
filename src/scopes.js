@@ -72,44 +72,20 @@ exports.scopeIntersection = (scopeset1, scopeset2) => {
   const scope1 = scopeset2.filter(s => s);
   const scope2 = scopeset1.filter(s => s);
 
-  // case where scope1 or scope2 is a wildcard
-  if (scope1.length === 1 && scope1[0] === '*') {
-    return scope2;
-  } else if (scope2.length === 1 && scope2[0] === '*') {
-    return scope1;
-  }
+  scope2.forEach((s2) => {
+    scope1.forEach((s1) => {
+      const star = '*';
+      const s1IndexOfStar = s1.indexOf(star);
+      const s2IndexOfStar = s2.indexOf(star);
 
-  scope2.forEach((p) => {
-    scope1.forEach((s) => {
-      const s1 = s.split(':');
-      const s2 = p.split(':');
-      const length = Math.min(s1.length, s2.length);
-      let res = [];
-
-      for (let i = 0; i < length; i++) {
-        const token1 = s1[i];
-        const token2 = s2[i];
-
-        // tokens match
-        if (token1 === token2) {
-          res.push(token1);
-        // token 1 is a star but not token 2
-        } else if (token1 === '*' && token2 !== '*') {
-          res.push(token2);
-        // token 2 is a star but not token 1
-        } else if (token1 !== '*' && token2 === '*') {
-          res.push(token1);
-        // tokens don't not match
-        } else if (token1 !== token2) {
-          res = [];
-          break;
-        }
-      }
-
-      const junction = res.join(':');
-
-      if (res.length) {
-        junctions.push(junction);
+      if (s1 === s2) {
+        junctions.push(s1);
+      } else if (s1.slice(-1) === star && s1.slice(0, s1IndexOfStar) === s2.slice(0, s1IndexOfStar)) {
+        // s1 ends with * and s1 and s2 are equal up to the position of that *
+        junctions.push(s2);
+      } else if (s2.slice(-1) === star && s2.slice(0, s2IndexOfStar) === s1.slice(0, s2IndexOfStar)) {
+        // s2 ends with * and s2 and s1 are equal up to the position of that *
+        junctions.push(s1);
       }
     });
   });

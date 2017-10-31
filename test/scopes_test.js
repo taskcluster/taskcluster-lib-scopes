@@ -130,14 +130,14 @@ suite('scopeIntersection', () => {
     const scope1 = ['foo:bar:bing'];
     const scope2 = ['foo:*:bing'];
 
-    testScopeIntersection(scope1, scope2, scope1, `expected ${scope1}`);
+    testScopeIntersection(scope1, scope2, [], 'expected an empty set');
   });
 
   test('star at beginning', () => {
     const scope1 = ['foo:bar'];
     const scope2 = ['*:bar'];
 
-    testScopeIntersection(scope1, scope2, scope1, `expected ${scope1}`);
+    testScopeIntersection(scope1, scope2, [], 'expected an empty set');
   });
 
   test('prefix with no star', () => {
