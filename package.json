@@ -20,7 +20,7 @@
     "url": "https://github.com/taskcluster/taskcluster-lib-scopes.git"
   },
   "dependencies": {
-    "babel-runtime": "^6.0.0"
+    "babel-runtime": "^6.26.0"
   },
   "devDependencies": {
     "babel-compile": "^2.0.0",
