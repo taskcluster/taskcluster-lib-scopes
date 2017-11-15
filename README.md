@@ -71,3 +71,14 @@ assert(scopeUtils.scopeMatch(['a*', 'b'], [['a', 'b'], ['c']]));
 // Checks if ['b'] satisfies [['a', 'b'], ['c']] (spoiler alert it doesn't)
 assert(!scopeUtils.scopeMatch(['b'], [['a', 'b'], ['c']]));
 ```
+### Set Operations
+
+The intersection of two scopesets A and B is the largest scopeset C which is
+satisfied by both A and B. Less formally, it's the set of scopes in both
+scopesets.  The `scopeIntersection` function will compute this value:
+
+```js
+const scope1 = ['bar:*'];
+const scope2 = ['foo:x', 'bar:x'];
+assert.equal(['bar:x'], scopeUtils.scopeIntersection(scope1, scope2));
+```
