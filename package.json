@@ -27,6 +27,7 @@
     "babel-preset-taskcluster": "^3.0.0",
     "eslint": "^4.10.0",
     "eslint-config-taskcluster": "^3.0.0",
+    "lodash": "^4.17.4",
     "mocha": "4.0.1",
     "mocha-eslint": "^4.1.0"
   }

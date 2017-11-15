@@ -82,3 +82,31 @@ const scope1 = ['bar:*'];
 const scope2 = ['foo:x', 'bar:x'];
 assert.equal(['bar:x'], scopeUtils.scopeIntersection(scope1, scope2));
 ```
+
+### Sorting, Merging, and Normalizing
+
+In a given set of scopes, one scope may satisfy another, making the latter
+superfluous.  For example, in `['ab*', 'abcd', 'xyz']` the first scope
+satisfies the second, so the scopeset is equivalent to `['ab*', 'xyz']`. A
+scopeset that is minimized using this technique is said to be "normalized".
+
+The `normalizeScopeSet` function will normalize a scopeset.  However, it
+*requires* that its input is already sorted using `scopeCopmare`. The whole
+operation looks like this:
+
+```js
+let scopeset = ['a', 'a*', 'ab', 'b'];
+scopeset.sort(scopeUtils.scopeCompare);
+assert.equal(
+    ['a*', 'b'],
+    scopeUtils.normalize(scopeset));
+```
+
+The `scopeCompare` function sorts the scopes such that a scope ending with a
+`*` comes before anything else with the same prefix.  For example, `a*` comes
+before `a` and `ax`.
+
+Given two properly-sorted, normalized scopesets, the `mergeScopeSets` function
+will merge them into a new, sorted, normalized scopeset such that any scope
+satisfied by at least one of the input scopesets is satisfied by the resulting
+scopeset.
