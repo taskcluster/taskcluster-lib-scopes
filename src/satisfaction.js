@@ -1,11 +1,11 @@
 import assert from 'assert';
 import {validateScopeSets} from './validate';
 
-function validateScopePatterns(scopePatterns) {
+const validateScopePatterns = (scopePatterns) => {
   assert(scopePatterns instanceof Array && scopePatterns.every((scope) => {
     return typeof scope === 'string';
   }), 'scopes must be an array of strings');
-}
+};
 
 /**
  * Auxiliary function to check if scopePatterns satisfies a scope-set
@@ -19,13 +19,13 @@ function validateScopePatterns(scopePatterns) {
  *
  * Also expressed as ('a' and 'b') or 'c'.
  */
-exports.scopeMatch = function(scopePatterns, scopesets) {
+export const scopeMatch = (scopePatterns, scopesets) => {
   validateScopeSets(scopesets);
   validateScopePatterns(scopePatterns);
 
-  return scopesets.some(function(scopeset) {
-    return scopeset.every(function(scope) {
-      return scopePatterns.some(function(pattern) {
+  return scopesets.some(scopeset =>
+    scopeset.every(scope =>
+      scopePatterns.some(pattern => {
         if (scope === pattern) {
           return true;
         }
@@ -33,7 +33,7 @@ exports.scopeMatch = function(scopePatterns, scopesets) {
           return scope.indexOf(pattern.slice(0, -1)) === 0;
         }
         return false;
-      });
-    });
-  });
+      })
+    )
+  );
 };
