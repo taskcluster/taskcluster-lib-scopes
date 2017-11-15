@@ -11,7 +11,7 @@
     "pretest": "yarn lint && npm run compile",
     "test": "mocha test/*_test.js"
   },
-  "main": "./lib/scopes",
+  "main": "./lib/index",
   "files": [
     "lib"
   ],
