@@ -83,6 +83,12 @@ const scope2 = ['foo:x', 'bar:x'];
 assert.equal(['bar:x'], scopeUtils.scopeIntersection(scope1, scope2));
 ```
 
+The `scopeUnion` function will compute the union of two scopesets.  The union
+of two scopesets A and B is the largest scopeset C such that any scope
+satisfied by C is satisfied by at least one of A or B.
+
+Note that this function will change the order of the given scopesets.
+
 ### Sorting, Merging, and Normalizing
 
 In a given set of scopes, one scope may satisfy another, making the latter
