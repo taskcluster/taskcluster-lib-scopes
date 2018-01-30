@@ -74,7 +74,7 @@ exports.removeGivenScopes = function(scopeset, expression) {
 
     if ('AnyOf' in expr) {
       const AnyOf = expr.AnyOf.map(simplify);
-      if (AnyOf.includes(null)) {
+      if (AnyOf.indexOf(null) !== -1) {
         return null;
       }
       if (AnyOf.length === 1) {
