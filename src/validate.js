@@ -1,5 +1,3 @@
-const assert = require('assert');
-
 const SCOPES_MSG = 'scopes must be an array of arrays of strings ' +
           '(disjunctive normal form)';
 const VALID_SCOPE = /^[\x20-\x7e]*$/;
@@ -17,8 +15,12 @@ const validScope = exports.validScope = (scope) =>
  * of a scope-set.
  */
 exports.validateScopeSets = (scopesets) => {
-  assert(Array.isArray(scopesets), SCOPES_MSG);
-  assert(scopesets.every(function(conj) {
+  if (!Array.isArray(scopesets)) {
+    throw new Error(SCOPES_MSG);
+  }
+  if (!scopesets.every(function(conj) {
     return Array.isArray(conj) && conj.every(validScope);
-  }), SCOPES_MSG);
+  })) {
+    throw new Error(SCOPES_MSG);
+  }
 };

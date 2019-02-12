@@ -1,10 +1,11 @@
-const assert = require('assert');
 const {validateScopeSets} = require('./validate');
 
 const validateScopePatterns = (scopePatterns) => {
-  assert(scopePatterns instanceof Array && scopePatterns.every((scope) => {
+  if (!scopePatterns instanceof Array && scopePatterns.every((scope) => {
     return typeof scope === 'string';
-  }), 'scopes must be an array of strings');
+  })) {
+    throw new Error('scopes must be an array of strings');
+  }
 };
 
 const patternMatch = exports.patternMatch = (pattern, scope) => {

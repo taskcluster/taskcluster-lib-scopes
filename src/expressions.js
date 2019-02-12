@@ -1,4 +1,3 @@
-const assert = require('assert');
 const {validScope} = require('./validate');
 const {patternMatch} = require('./satisfaction');
 
@@ -15,13 +14,17 @@ const validateExpression = (expr) => {
 
 /** Assert that a scope expression is valid */
 exports.validExpression = (expr) => {
-  assert(validateExpression(expr), 'expected a valid scope expression');
+  if (!validateExpression(expr)) {
+    throw new Error('expected a valid scope expression');
+  }
   return true;
 };
 
 /** Check if a scope-set statisfies a given scope expression */
 exports.satisfiesExpression = function(scopeset, expression) {
-  assert(Array.isArray(scopeset), 'Scopeset must be an array.');
+  if (!Array.isArray(scopeset)) {
+    throw new Error('Scopeset must be an array.');
+  }
 
   const isSatisfied = (expr) => {
     if (typeof expr === 'string') {
