@@ -1,38 +1,43 @@
-version: 0
-metadata:
-  name: taskcluster-lib-scopes
-  description: 'Scopes library for taskcluster'
-  owner: '{{ event.head.user.email }}'
-  source: '{{ event.head.repo.url }}'
+version: 1
+policy:
+  pullRequests: public
 tasks:
-  - provisionerId: '{{ taskcluster.docker.provisionerId }}'
-    workerType: '{{ taskcluster.docker.workerType }}'
-    extra:
-      github:
-        events:
-          - pull_request.opened
-          - pull_request.synchronize
-          - pull_request.reopened
-          - push
-        branches:
-          - master
-    payload:
-      maxRunTime: 3600
-      image: 'node:8'
-      command:
-        - /bin/bash
-        - '--login'
-        - '-c'
-        - >-
-          git clone {{event.head.repo.url}} repo &&
-          cd repo &&
-          git config advice.detachedHead false &&
-          git checkout {{event.head.sha}} &&
-          yarn &&
-          yarn lint &&
-          yarn test
-    metadata:
-      name: taskcluster-lib-scopes test run
-      description: Run library test suite
-      owner: '{{ event.head.user.email }}'
-      source: '{{ event.head.repo.url }}'
+  $let:
+    should_run:
+      $if: 'tasks_for == "github-pull-request"'
+      then: {$eval: 'event["action"] in ["opened", "reopened", "synchronize"]'}
+      else: {$eval: 'tasks_for == "github-push"'}
+    clone_url:
+      $if: 'tasks_for == "github-pull-request"'
+      then: ${event.pull_request.head.repo.clone_url}
+      else: ${event.repository.clone_url}
+    sha:
+      $if: 'tasks_for == "github-pull-request"'
+      then: ${event.pull_request.head.sha}
+      else: ${event.after}
+  in:
+  - $if: should_run
+    then:
+      provisionerId: proj-taskcluster
+      workerType: ci
+      deadline: {$fromNow: '1 day'}
+      payload:
+        maxRunTime: 3600
+        image: "node:8"
+        command:
+          - /bin/bash
+          - '--login'
+          - '-c'
+          - >-
+            git clone ${clone_url} repo &&
+            cd repo &&
+            git config advice.detachedHead false &&
+            git checkout ${sha} &&
+            yarn &&
+            yarn lint &&
+            yarn test
+      metadata:
+        name: "taskcluster-lib-scopes test"
+        description: "Library for manipulating scopes"
+        owner: taskcluster-internal@mozilla.com
+        source: ${clone_url}
