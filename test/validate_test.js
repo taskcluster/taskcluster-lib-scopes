@@ -1,7 +1,8 @@
 const assert = require('assert');
 const utils = require('../src');
+const path = require('path');
 
-suite('validate', function() {
+suite(path.basename(__filename), function() {
   test('Normal-looking scopes are OK', function() {
     assert(utils.validScope('auth:credentials'));
   });

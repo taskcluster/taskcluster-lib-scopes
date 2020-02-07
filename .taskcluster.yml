@@ -29,41 +29,10 @@ tasks:
           git config advice.detachedHead false &&
           git checkout {{event.head.sha}} &&
           yarn &&
+          yarn lint &&
           yarn test
     metadata:
       name: taskcluster-lib-scopes test run
       description: Run library test suite
-      owner: '{{ event.head.user.email }}'
-      source: '{{ event.head.repo.url }}'
-  - provisionerId: '{{ taskcluster.docker.provisionerId }}'
-    workerType: '{{ taskcluster.docker.workerType }}'
-    extra:
-      github:
-        events:
-          - push
-        branches:
-          - master
-    scopes:
-      - auth:aws-s3:read-write:taskcluster-raw-docs/taskcluster-lib-scopes/
-    payload:
-      maxRunTime: 3600
-      image: taskcluster/upload-project-docs:latest
-      features:
-        taskclusterProxy:
-          true
-      command:
-        - /bin/bash
-        - '--login'
-        - '-cx'
-        - >-
-          git clone {{event.head.repo.url}} repo &&
-          cd repo &&
-          git config advice.detachedHead false &&
-          git checkout {{event.head.sha}} &&
-          export DEBUG=* DOCS_PROJECT=taskcluster-lib-scopes DOCS_TIER=libraries DOCS_FOLDER=docs DOCS_README=README.md &&
-          upload-project-docs
-    metadata:
-      name: "taskcluster-lib-scopes docs upload"
-      description: "Upload documentation for this project"
       owner: '{{ event.head.user.email }}'
       source: '{{ event.head.repo.url }}'
