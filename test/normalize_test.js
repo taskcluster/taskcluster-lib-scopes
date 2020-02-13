@@ -1,8 +1,9 @@
-suite('normalize', () => {
-  const utils = require('../src');
-  const assert = require('assert');
-  const _ = require('lodash');
+const utils = require('../src');
+const path = require('path');
+const assert = require('assert');
+const _ = require('lodash');
 
+suite(path.basename(__filename), function() {
   suite('scope comparing', function() {
     const cmp = (a, b) => {
       if (a < b) {
@@ -175,8 +176,8 @@ suite('normalize', () => {
       'caa', 'cab*', 'cab', 'cc*',
     ];
     testSortScopes({
-      title:  'big list',
-      scopes:  _.shuffle(sortedRoleIds),
+      title: 'big list',
+      scopes: _.shuffle(sortedRoleIds),
       expected: sortedRoleIds,
     });
   });

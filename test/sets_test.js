@@ -1,7 +1,8 @@
 const assert = require('assert');
+const path = require('path');
 const utils = require('../src');
 
-suite('sets', function() {
+suite(path.basename(__filename), function() {
   suite('scopeUnion', () => {
     const testScopeUnion = (scope1, scope2, expected, message) => {
       assert.deepEqual(utils.scopeUnion(scope1, scope2).sort(), expected.sort(), message);
