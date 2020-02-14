@@ -2,7 +2,7 @@
 
 Simple utilities to validate scopes, scope-sets, and scope-expression satisfiability.
 
-For information on scopes, see [the Taskcluster documentation](https://docs.taskcluster.net/docs/manual/design/apis/hawk/scopes).
+For information on scopes, see [the Taskcluster documentation](https://docs.taskcluster.net/docs/manual/access-control/api#scopes-and-roles).
 
 ## Usage
 
