@@ -85,7 +85,7 @@ Scope set satisfaction is checked with with `satisfiesExpression` which takes
 a scopeset as the first argument and a scope expression as the second.
 
 **NOTE:** this function is entirely local and does no expansion of `assume:` scopes.
-Call the authentication service's `expandScopes` endpoint to perform such expansion first, if necessary.
+Call the Auth service's `expandScopes` endpoint to perform such expansion first, if necessary.
 
 Examples:
 
