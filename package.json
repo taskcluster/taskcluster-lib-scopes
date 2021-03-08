@@ -28,5 +28,23 @@
   },
   "dependencies": {
     "fast-json-stable-stringify": "^2.1.0"
+  },
+  "renovate": {
+    "extends": [
+      "config:base"
+    ],
+    "packageRules": [
+      {
+        "updateTypes": [
+          "minor",
+          "patch"
+        ],
+        "matchCurrentVersion": "!/^0/",
+        "paths": [
+          "+(package.json)"
+        ],
+        "automerge": true
+      }
+    ]
   }
 }
