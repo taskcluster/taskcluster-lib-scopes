@@ -23,7 +23,7 @@ tasks:
       deadline: {$fromNow: '1 day'}
       payload:
         maxRunTime: 3600
-        image: "node:10"
+        image: "node:20"
         command:
           - /bin/bash
           - '--login'
