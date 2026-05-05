@@ -1,9 +1,9 @@
 const assert = require('node:assert');
 const utils = require('../src/expressions.js');
 
-suite('benchmark scopesSatisfying', function() {
+suite('benchmark scopesSatisfying', function () {
   const bench = (msg, fn) => {
-    test(`bench ${msg} - satisfiesExpression`, function() {
+    test(`bench ${msg} - satisfiesExpression`, function () {
       let start, duration1, duration2, d;
       const N = 10000;
 
@@ -23,7 +23,7 @@ suite('benchmark scopesSatisfying', function() {
       d = process.hrtime(start);
       duration2 = d[0] * 1000 + d[1] / 1000000;
       console.log(`${msg} scopesSatisfying: ${duration2 / N}ms`);
-      console.log(`${msg} ratio: ${100 * duration2 / duration1}%`);
+      console.log(`${msg} ratio: ${(100 * duration2) / duration1}%`);
     });
   };
 
@@ -291,56 +291,60 @@ suite('benchmark scopesSatisfying', function() {
     'secrets:set:garbage/*',
   ];
 
-  const A = fn => fn(
-    scopeset,
-    {AnyOf: [
-      {AllOf: ['secrets:get:garbage/abc', 'secrets:get:not-garbage']}, // doesn't match
-      {AllOf: ['queue:route:index.garbage.foo', 'scope1']}, // does match
-      'scope2',
-    ]},
-  );
+  const A = fn =>
+    fn(scopeset, {
+      AnyOf: [
+        {AllOf: ['secrets:get:garbage/abc', 'secrets:get:not-garbage']}, // doesn't match
+        {AllOf: ['queue:route:index.garbage.foo', 'scope1']}, // does match
+        'scope2',
+      ],
+    });
   bench('A', A);
 
-  const B = fn => fn(
-    scopeset,
-    'queue:scheduler-id:gecko-level-3',
-  );
+  const B = fn => fn(scopeset, 'queue:scheduler-id:gecko-level-3');
   bench('B', B);
 
-  const Q = fn => fn(scopeset, {
-    AllOf: [
-      'scope1',
-      'scope2',
-      'queue:route:path1.a.b',
-      'queue:route:path2',
-      {AnyOf: [
-        {AllOf: [
-          'queue:scheduler-id:tc-github',
-          {AnyOf: [
-            'queue:create-task:lowest:aws-provisioner-v1/gecko-1-b-foo',
-            'queue:create-task:lower:aws-provisioner-v1/gecko-1-b-foo',
-            'queue:create-task:low:aws-provisioner-v1/gecko-1-b-foo',
-            'queue:create-task:medium:aws-provisioner-v1/gecko-1-b-foo',
-            'queue:create-task:high:aws-provisioner-v1/gecko-1-b-foo',
-            'queue:create-task:higher:aws-provisioner-v1/gecko-1-b-foo',
-            'queue:create-task:highest:aws-provisioner-v1/gecko-1-b-foo',
-            'queue:create-task:omg:aws-provisioner-v1/gecko-1-b-foo',
-          ]},
-        ]},
+  const Q = fn =>
+    fn(scopeset, {
+      AllOf: [
+        'scope1',
+        'scope2',
+        'queue:route:path1.a.b',
+        'queue:route:path2',
         {
           AnyOf: [
-            'queue:create-task:aws-provisioner-v1/gecko-q-b-foo',
             {
               AllOf: [
-                'queue:define-task:aws-provisioner-v1/gecko-1-b-foo',
-                'queue:task-group-id:tc-github/920385029385',
-                'queue:schedule-task:tc-github/920385029385/102395823095',
+                'queue:scheduler-id:tc-github',
+                {
+                  AnyOf: [
+                    'queue:create-task:lowest:aws-provisioner-v1/gecko-1-b-foo',
+                    'queue:create-task:lower:aws-provisioner-v1/gecko-1-b-foo',
+                    'queue:create-task:low:aws-provisioner-v1/gecko-1-b-foo',
+                    'queue:create-task:medium:aws-provisioner-v1/gecko-1-b-foo',
+                    'queue:create-task:high:aws-provisioner-v1/gecko-1-b-foo',
+                    'queue:create-task:higher:aws-provisioner-v1/gecko-1-b-foo',
+                    'queue:create-task:highest:aws-provisioner-v1/gecko-1-b-foo',
+                    'queue:create-task:omg:aws-provisioner-v1/gecko-1-b-foo',
+                  ],
+                },
+              ],
+            },
+            {
+              AnyOf: [
+                'queue:create-task:aws-provisioner-v1/gecko-q-b-foo',
+                {
+                  AllOf: [
+                    'queue:define-task:aws-provisioner-v1/gecko-1-b-foo',
+                    'queue:task-group-id:tc-github/920385029385',
+                    'queue:schedule-task:tc-github/920385029385/102395823095',
+                  ],
+                },
               ],
             },
           ],
         },
-      ]},
-    ],
-  });
+      ],
+    });
   bench('Q', Q);
 });

@@ -8,16 +8,16 @@ const VALID_SCOPE = /^[\x20-\x7e]*$/;
  * characters 0x20-0x7e (printable characters, including space but no other
  * whitespace)
  */
-const validScope = (scope) =>
-  typeof scope === 'string' && VALID_SCOPE.test(scope);
+const validScope = scope => typeof scope === 'string' && VALID_SCOPE.test(scope);
 
 /**
  * Finds scope intersections between two scope sets.
  */
-const scopeIntersection = (scopeset1, scopeset2) => [
-  ...scopeset1.filter(s1 => scopeset2.some(s2 => patternMatch(s2, s1))),
-  ...scopeset2.filter(s2 => scopeset1.some(s1 => patternMatch(s1, s2))),
-].filter((v, i, a) => a.indexOf(v) === i);
+const scopeIntersection = (scopeset1, scopeset2) =>
+  [
+    ...scopeset1.filter(s1 => scopeset2.some(s2 => patternMatch(s2, s1))),
+    ...scopeset2.filter(s2 => scopeset1.some(s1 => patternMatch(s1, s2))),
+  ].filter((v, i, a) => a.indexOf(v) === i);
 
 /**
  * Finds scope union between two scope sets.
@@ -219,14 +219,15 @@ const mergeScopeSets = (scopes1, scopes2) => {
 
 /**
  * Validate a scope expression */
-const validateExpression = (expr) => {
+const validateExpression = expr => {
   if (typeof expr === 'string') {
     return validScope(expr);
   }
   if (typeof expr === 'object') {
-    return Object.keys(expr).length === 1 && (
-      'AnyOf' in expr && expr.AnyOf.every(validateExpression) ||
-      'AllOf' in expr && expr.AllOf.every(validateExpression)
+    return (
+      Object.keys(expr).length === 1 &&
+      (('AnyOf' in expr && expr.AnyOf.every(validateExpression)) ||
+        ('AllOf' in expr && expr.AllOf.every(validateExpression)))
     );
   } else {
     return false;
@@ -235,24 +236,21 @@ const validateExpression = (expr) => {
 
 /**
  * Assert that a scope expression is valid */
-const validExpression = (expr) => {
+const validExpression = expr => {
   assert(validateExpression(expr), 'expected a valid scope expression');
   return true;
 };
 
 /**
  * Check if a scope-set statisfies a given scope expression */
-const satisfiesExpression = function(scopeset, expression) {
+const satisfiesExpression = function (scopeset, expression) {
   assert(Array.isArray(scopeset), 'Scopeset must be an array.');
 
-  const isSatisfied = (expr) => {
+  const isSatisfied = expr => {
     if (typeof expr === 'string') {
       return scopeset.some(s => patternMatch(s, expr));
     }
-    return (
-      'AllOf' in expr && expr.AllOf.every(isSatisfied) ||
-      'AnyOf' in expr && expr.AnyOf.some(isSatisfied)
-    );
+    return ('AllOf' in expr && expr.AllOf.every(isSatisfied)) || ('AnyOf' in expr && expr.AnyOf.some(isSatisfied));
   };
 
   return isSatisfied(expression);
@@ -332,8 +330,8 @@ const scopesSatisfying = (scopeset, expression) => {
  * are definitely needed to satisfy the expression and at least
  * one of the scopes under an AnyOf must be provided to satisfy.
  */
-const removeGivenScopes = function(scopeset, expression) {
-  const simplify = (expr) => {
+const removeGivenScopes = function (scopeset, expression) {
+  const simplify = expr => {
     if (typeof expr === 'string') {
       if (scopeset.some(s => patternMatch(s, expr))) {
         return null;

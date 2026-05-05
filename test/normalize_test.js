@@ -3,8 +3,8 @@ const path = require('node:path');
 const assert = require('node:assert');
 const _ = require('lodash');
 
-suite(path.basename(__filename), function() {
-  suite('scope comparing', function() {
+suite(path.basename(__filename), function () {
+  suite('scope comparing', function () {
     const cmp = (a, b) => {
       if (a < b) {
         return -1;
@@ -32,7 +32,8 @@ suite(path.basename(__filename), function() {
             assert.equal(
               SYMBOLIC[utils.scopeCompare(scopes[i], scopes[j])],
               SYMBOLIC[exp],
-              `expected ${scopes[i]} ${SYMBOLIC[exp]} ${scopes[j]}`);
+              `expected ${scopes[i]} ${SYMBOLIC[exp]} ${scopes[j]}`,
+            );
           });
         });
       });
@@ -40,11 +41,7 @@ suite(path.basename(__filename), function() {
 
     testTotalOrder({
       title: 'simple example of total order',
-      scopes: [
-        'abc*',
-        'abc',
-        'abc%d',
-      ],
+      scopes: ['abc*', 'abc', 'abc%d'],
     });
 
     testTotalOrder({
@@ -88,7 +85,7 @@ suite(path.basename(__filename), function() {
     });
   });
 
-  suite('scope sorting', function() {
+  suite('scope sorting', function () {
     const testSortScopes = ({title, scopes, expected, N}) => {
       title = title || `sort scopes ${scopes.join(',')}`;
       test(title, () => {
@@ -101,45 +98,13 @@ suite(path.basename(__filename), function() {
     };
 
     testSortScopes({
-      scopes: [
-        'test-12',
-        'test-2',
-        'test-11',
-        'test-1',
-        'test-1*',
-        'test-13',
-        'test-3',
-        'test-10',
-        'test-*',
-      ],
-      expected: [
-        'test-*',
-        'test-1*',
-        'test-1',
-        'test-10',
-        'test-11',
-        'test-12',
-        'test-13',
-        'test-2',
-        'test-3',
-      ],
+      scopes: ['test-12', 'test-2', 'test-11', 'test-1', 'test-1*', 'test-13', 'test-3', 'test-10', 'test-*'],
+      expected: ['test-*', 'test-1*', 'test-1', 'test-10', 'test-11', 'test-12', 'test-13', 'test-2', 'test-3'],
     });
 
     testSortScopes({
-      scopes: [
-        'test*a',
-        'test*b',
-        'test*',
-        'test',
-        'testb',
-      ],
-      expected: [
-        'test*',
-        'test',
-        'test*a',
-        'test*b',
-        'testb',
-      ],
+      scopes: ['test*a', 'test*b', 'test*', 'test', 'testb'],
+      expected: ['test*', 'test', 'test*a', 'test*b', 'testb'],
     });
 
     testSortScopes({
@@ -172,8 +137,21 @@ suite(path.basename(__filename), function() {
     });
 
     const sortedRoleIds = [
-      '*', 'a*', 'a', 'aa', 'aaa', 'aab', 'ab', 'abb*', 'abb', 'abbc', 'ca',
-      'caa', 'cab*', 'cab', 'cc*',
+      '*',
+      'a*',
+      'a',
+      'aa',
+      'aaa',
+      'aab',
+      'ab',
+      'abb*',
+      'abb',
+      'abbc',
+      'ca',
+      'caa',
+      'cab*',
+      'cab',
+      'cc*',
     ];
     testSortScopes({
       title: 'big list',
@@ -182,41 +160,35 @@ suite(path.basename(__filename), function() {
     });
   });
 
-  suite('normalizeScopeSet', function() {
-    test('empty set', function() {
-      assert.deepEqual([],
-        utils.normalizeScopeSet([]));
+  suite('normalizeScopeSet', function () {
+    test('empty set', function () {
+      assert.deepEqual([], utils.normalizeScopeSet([]));
     });
 
-    test('already normalized', function() {
-      assert.deepEqual(['a*', 'b*'],
-        utils.normalizeScopeSet(['a*', 'b*']));
+    test('already normalized', function () {
+      assert.deepEqual(['a*', 'b*'], utils.normalizeScopeSet(['a*', 'b*']));
     });
 
-    test('not normalized', function() {
+    test('not normalized', function () {
       const unnormalized = ['abc', 'abx*', 'ab*', 'b', 'b*'];
       unnormalized.sort(utils.scopeCompare);
-      assert.deepEqual(['ab*', 'b*'],
-        utils.normalizeScopeSet(unnormalized));
+      assert.deepEqual(['ab*', 'b*'], utils.normalizeScopeSet(unnormalized));
     });
 
-    test('not normalized, contains duplicates', function() {
+    test('not normalized, contains duplicates', function () {
       const unnormalized = ['abc', 'abx*', 'ab*', 'b', 'b*', 'abc*'];
       unnormalized.sort(utils.scopeCompare);
-      assert.deepEqual(['ab*', 'b*'],
-        utils.normalizeScopeSet(unnormalized));
+      assert.deepEqual(['ab*', 'b*'], utils.normalizeScopeSet(unnormalized));
     });
 
-    test('not normalized, contains lots of duplicates', function() {
-      const unnormalized = ['abc', 'abx*', 'ab*', 'b', 'b*', 'abc*', 'b*',
-        'b*', 'b*', 'b*'];
+    test('not normalized, contains lots of duplicates', function () {
+      const unnormalized = ['abc', 'abx*', 'ab*', 'b', 'b*', 'abc*', 'b*', 'b*', 'b*', 'b*'];
       unnormalized.sort(utils.scopeCompare);
-      assert.deepEqual(['ab*', 'b*'],
-        utils.normalizeScopeSet(unnormalized));
+      assert.deepEqual(['ab*', 'b*'], utils.normalizeScopeSet(unnormalized));
     });
   });
 
-  suite('scopeset merging', function() {
+  suite('scopeset merging', function () {
     const testMergeScopeSets = (title, {scopesA, scopesB, expected, N}) => {
       test(`mergeScopeSets (${title})`, () => {
         _.range(N || 50).forEach(() => {
