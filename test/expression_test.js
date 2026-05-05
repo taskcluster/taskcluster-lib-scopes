@@ -1,5 +1,5 @@
-const assert = require('assert');
-const path = require('path');
+const assert = require('node:assert');
+const path = require('node:path');
 const {
   removeGivenScopes,
   validExpression,
@@ -8,9 +8,8 @@ const {
   scopeIntersection,
 } = require('../src');
 
-suite(path.basename(__filename), function() {
-  suite('scope expression validity:', function() {
-
+suite(path.basename(__filename), function () {
+  suite('scope expression validity:', function () {
     function scenario(expr, shouldFail = false) {
       return () => {
         try {
@@ -55,7 +54,7 @@ suite(path.basename(__filename), function() {
     });
   });
 
-  suite('scope expression satisfaction:', function() {
+  suite('scope expression satisfaction:', function () {
     // We want to be confident that `satisfiesExpression` and `scopesSatisfyingExpression` both
     // accept and reject the same inputs, so they are tested in parallel.
 
@@ -84,9 +83,7 @@ suite(path.basename(__filename), function() {
 
     function scopesSatisfyingSatisfiesScenario(scopes, expr) {
       return () => {
-        assert(satisfiesExpression(
-          scopesSatisfying(scopes, expr),
-          expr));
+        assert(satisfiesExpression(scopesSatisfying(scopes, expr), expr));
       };
     }
 
@@ -95,9 +92,7 @@ suite(path.basename(__filename), function() {
         const satisfyingScopes = scopesSatisfying(scopes, expr);
         // assert that satisfyingScopes is a subset of scopes by checking
         // that it does not change under intersection
-        assert.deepEqual(
-          scopeIntersection(scopes, satisfyingScopes),
-          satisfyingScopes);
+        assert.deepEqual(scopeIntersection(scopes, satisfyingScopes), satisfyingScopes);
       };
     }
 
@@ -117,10 +112,14 @@ suite(path.basename(__filename), function() {
       [['xyz', 'abc'], {AllOf: [{AnyOf: [{AllOf: ['foo']}, {AllOf: ['bar']}]}]}],
       [['a*', 'b*', 'c*'], {AllOf: ['bx', 'cx', {AnyOf: ['xxx', 'yyyy']}]}],
     ].forEach(([s, e]) => {
-      test(`${JSON.stringify(e)} is _not_ satisfied by ${JSON.stringify(s)}`,
-        satisfiesExpressionScenario(s, e, 'should-fail'));
-      test(`${JSON.stringify(e)} does _not_ have scopes satisfying ${JSON.stringify(s)}`,
-        scopesSatisfyingScenario(s, e, undefined));
+      test(
+        `${JSON.stringify(e)} is _not_ satisfied by ${JSON.stringify(s)}`,
+        satisfiesExpressionScenario(s, e, 'should-fail'),
+      );
+      test(
+        `${JSON.stringify(e)} does _not_ have scopes satisfying ${JSON.stringify(s)}`,
+        scopesSatisfyingScenario(s, e, undefined),
+      );
     });
 
     // The following should succeed
@@ -142,29 +141,33 @@ suite(path.basename(__filename), function() {
       // complex expression with only some AnyOf branches matching
       [
         ['a*', 'b*', 'c*'],
-        {AnyOf: [
-          {AllOf: ['ax', 'jx']}, // doesn't match
-          {AllOf: ['bx', 'cx']}, // does match
-          'bbb',
-        ]},
+        {
+          AnyOf: [
+            {AllOf: ['ax', 'jx']}, // doesn't match
+            {AllOf: ['bx', 'cx']}, // does match
+            'bbb',
+          ],
+        },
         ['bbb', 'bx', 'cx'],
       ],
-
     ].forEach(([s, e, sat]) => {
-      test(`${JSON.stringify(e)} is satisfied by ${JSON.stringify(s)}`,
-        satisfiesExpressionScenario(s, e));
-      test(`${JSON.stringify(e)} has scopes ${JSON.stringify(sat)} satisfying ${JSON.stringify(s)}`,
-        scopesSatisfyingScenario(s, e, sat));
-      test(`${JSON.stringify(e)}: Satisfying scopes ${JSON.stringify(sat)} actually do satisfy ${JSON.stringify(s)}`,
-        scopesSatisfyingSatisfiesScenario(s, e));
-      test(`${JSON.stringify(e)}: Satisfying scopes ${JSON.stringify(sat)} are a subset of ${JSON.stringify(s)}`,
-        scopesSatisfyingIsSubsetScenario(s, e));
+      test(`${JSON.stringify(e)} is satisfied by ${JSON.stringify(s)}`, satisfiesExpressionScenario(s, e));
+      test(
+        `${JSON.stringify(e)} has scopes ${JSON.stringify(sat)} satisfying ${JSON.stringify(s)}`,
+        scopesSatisfyingScenario(s, e, sat),
+      );
+      test(
+        `${JSON.stringify(e)}: Satisfying scopes ${JSON.stringify(sat)} actually do satisfy ${JSON.stringify(s)}`,
+        scopesSatisfyingSatisfiesScenario(s, e),
+      );
+      test(
+        `${JSON.stringify(e)}: Satisfying scopes ${JSON.stringify(sat)} are a subset of ${JSON.stringify(s)}`,
+        scopesSatisfyingIsSubsetScenario(s, e),
+      );
     });
-
   });
 
-  suite('scope expression failure explanation:', function() {
-
+  suite('scope expression failure explanation:', function () {
     function scenario(scopes, expr, explanation) {
       return () => {
         assert.deepEqual(explanation, removeGivenScopes(scopes, expr));
@@ -181,14 +184,12 @@ suite(path.basename(__filename), function() {
       [['ghi'], {AnyOf: ['abc', 'def']}, {AnyOf: ['abc', 'def']}],
       [['ghi'], {AllOf: ['abc', 'def', 'ghi']}, {AllOf: ['abc', 'def']}],
       [['ghi*', 'fff*'], {AnyOf: ['abc', 'def']}, {AnyOf: ['abc', 'def']}],
-      [
-        ['xyz', 'abc'],
-        {AllOf: [{AnyOf: [{AllOf: ['foo']}, {AllOf: ['bar']}]}]},
-        {AnyOf: ['foo', 'bar']},
-      ],
+      [['xyz', 'abc'], {AllOf: [{AnyOf: [{AllOf: ['foo']}, {AllOf: ['bar']}]}]}, {AnyOf: ['foo', 'bar']}],
     ].forEach(([s, e, expl]) => {
-      test(`Given ${JSON.stringify(s)}, ${JSON.stringify(e)} is explained by ${JSON.stringify(expl)}}`,
-        scenario(s, e, expl));
+      test(
+        `Given ${JSON.stringify(s)}, ${JSON.stringify(e)} is explained by ${JSON.stringify(expl)}}`,
+        scenario(s, e, expl),
+      );
     });
   });
 });

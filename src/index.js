@@ -8,23 +8,23 @@ const VALID_SCOPE = /^[\x20-\x7e]*$/;
  * characters 0x20-0x7e (printable characters, including space but no other
  * whitespace)
  */
-const validScope = exports.validScope = (scope) =>
-  typeof scope === 'string' && VALID_SCOPE.test(scope);
+const validScope = scope => typeof scope === 'string' && VALID_SCOPE.test(scope);
 
 /**
  * Finds scope intersections between two scope sets.
  */
-exports.scopeIntersection = (scopeset1, scopeset2) => [
-  ...scopeset1.filter(s1 => scopeset2.some(s2 => patternMatch(s2, s1))),
-  ...scopeset2.filter(s2 => scopeset1.some(s1 => patternMatch(s1, s2))),
-].filter((v, i, a) => a.indexOf(v) === i);
+const scopeIntersection = (scopeset1, scopeset2) =>
+  [
+    ...scopeset1.filter(s1 => scopeset2.some(s2 => patternMatch(s2, s1))),
+    ...scopeset2.filter(s2 => scopeset1.some(s1 => patternMatch(s1, s2))),
+  ].filter((v, i, a) => a.indexOf(v) === i);
 
 /**
  * Finds scope union between two scope sets.
  *
  * Note that as a side-effect, this will sort the given scopesets.
  */
-exports.scopeUnion = (scopeset1, scopeset2) => {
+const scopeUnion = (scopeset1, scopeset2) => {
   scopeset1.sort(scopeCompare);
   scopeset1 = normalizeScopeSet(scopeset1);
   scopeset2.sort(scopeCompare);
@@ -35,7 +35,7 @@ exports.scopeUnion = (scopeset1, scopeset2) => {
 /**
  * Return true if the given scope matches the given pattern (possibly ending with *)
  */
-const patternMatch = exports.patternMatch = (pattern, scope) => {
+const patternMatch = (pattern, scope) => {
   if (scope === pattern) {
     return true;
   }
@@ -67,9 +67,9 @@ const patternMatch = exports.patternMatch = (pattern, scope) => {
  * This sort order is useful for normalizing scopes, since it puts the "interesting"
  * scopes (those with a final `*`) up front.
  */
-const scopeCompare = exports.scopeCompare = (a, b) => {
-  let astar = a.endsWith('*');
-  let bstar = b.endsWith('*');
+const scopeCompare = (a, b) => {
+  const astar = a.endsWith('*');
+  const bstar = b.endsWith('*');
 
   a = astar ? a.slice(0, -1) : a;
   b = bstar ? b.slice(0, -1) : b;
@@ -107,20 +107,20 @@ const scopeCompare = exports.scopeCompare = (a, b) => {
  * added the to normalized result list doesn't satisfy the current scope, the
  * current scope is added to the result list.
  */
-const normalizeScopeSet = exports.normalizeScopeSet = scopeset => {
+const normalizeScopeSet = scopeset => {
   const n = scopeset.length;
   const result = [];
   let i = 0;
 
   while (i < n) {
-    let scope = scopeset[i++];
+    const scope = scopeset[i++];
     result.push(scope);
     // consume duplicates
     while (i < n && scopeset[i] === scope) {
       i++;
     }
     if (scope.endsWith('*')) {
-      let prefix = scope.slice(0, -1);
+      const prefix = scope.slice(0, -1);
       while (i < n && scopeset[i].startsWith(prefix)) {
         i++;
       }
@@ -141,19 +141,19 @@ const normalizeScopeSet = exports.normalizeScopeSet = scopeset => {
  * Returns a set of normalized scopes. See scopeCompare for formal definition
  * for normalized scope-set.
  */
-const mergeScopeSets = exports.mergeScopeSets = (scopes1, scopes2) => {
+const mergeScopeSets = (scopes1, scopes2) => {
   // This is dead simple, we track the length with n and m
-  let n = scopes1.length;
-  let m = scopes2.length;
+  const n = scopes1.length;
+  const m = scopes2.length;
   // And we track the current offset in the scopes1 and scopes2 using
   // i and j respectfully. This ensure that we don't have modify the arguments.
   let i = 0;
   let j = 0;
-  let scopes = [];
+  const scopes = [];
   while (i < n && j < m) {
     // Take a scope for each list
-    let s1 = scopes1[i];
-    let s2 = scopes2[j];
+    const s1 = scopes1[i];
+    const s2 = scopes2[j];
     let scope = null;
     if (s1 === s2) {
       // If the two scopes are exactly the same, then we add one of them
@@ -165,7 +165,7 @@ const mergeScopeSets = exports.mergeScopeSets = (scopes1, scopes2) => {
     } else {
       // If the scopes are different, we compare them using the function used
       // for the sort order and choose the one that comes first.
-      let z = scopeCompare(s1, s2);
+      const z = scopeCompare(s1, s2);
       if (z < 0) {
         scope = s1;
         scopes.push(s1);
@@ -179,7 +179,7 @@ const mergeScopeSets = exports.mergeScopeSets = (scopes1, scopes2) => {
     // If we just added a star scope, we have to skip everything that
     // is satisfied by the star scope.
     if (scope.endsWith('*')) {
-      let prefix = scope.slice(0, -1);
+      const prefix = scope.slice(0, -1);
       while (i < n && scopes1[i].startsWith(prefix)) {
         i += 1;
       }
@@ -193,22 +193,22 @@ const mergeScopeSets = exports.mergeScopeSets = (scopes1, scopes2) => {
   // normalization, we still do the endsWith('*') trick, skipping scopes that
   // are already satisfied.
   while (i < n) {
-    let scope = scopes1[i];
+    const scope = scopes1[i];
     scopes.push(scope);
     i += 1;
     if (scope.endsWith('*')) {
-      let prefix = scope.slice(0, -1);
+      const prefix = scope.slice(0, -1);
       while (i < n && scopes1[i].startsWith(prefix)) {
         i += 1;
       }
     }
   }
   while (j < m) {
-    let scope = scopes2[j];
+    const scope = scopes2[j];
     scopes.push(scope);
     j += 1;
     if (scope.endsWith('*')) {
-      let prefix = scope.slice(0, -1);
+      const prefix = scope.slice(0, -1);
       while (j < m && scopes2[j].startsWith(prefix)) {
         j += 1;
       }
@@ -219,14 +219,15 @@ const mergeScopeSets = exports.mergeScopeSets = (scopes1, scopes2) => {
 
 /**
  * Validate a scope expression */
-const validateExpression = (expr) => {
+const validateExpression = expr => {
   if (typeof expr === 'string') {
     return validScope(expr);
   }
   if (typeof expr === 'object') {
-    return Object.keys(expr).length === 1 && (
-      'AnyOf' in expr && expr.AnyOf.every(validateExpression) ||
-      'AllOf' in expr && expr.AllOf.every(validateExpression)
+    return (
+      Object.keys(expr).length === 1 &&
+      (('AnyOf' in expr && expr.AnyOf.every(validateExpression)) ||
+        ('AllOf' in expr && expr.AllOf.every(validateExpression)))
     );
   } else {
     return false;
@@ -235,24 +236,21 @@ const validateExpression = (expr) => {
 
 /**
  * Assert that a scope expression is valid */
-exports.validExpression = (expr) => {
+const validExpression = expr => {
   assert(validateExpression(expr), 'expected a valid scope expression');
   return true;
 };
 
 /**
  * Check if a scope-set statisfies a given scope expression */
-exports.satisfiesExpression = function(scopeset, expression) {
+const satisfiesExpression = function (scopeset, expression) {
   assert(Array.isArray(scopeset), 'Scopeset must be an array.');
 
-  const isSatisfied = (expr) => {
+  const isSatisfied = expr => {
     if (typeof expr === 'string') {
       return scopeset.some(s => patternMatch(s, expr));
     }
-    return (
-      'AllOf' in expr && expr.AllOf.every(isSatisfied) ||
-      'AnyOf' in expr && expr.AnyOf.some(isSatisfied)
-    );
+    return ('AllOf' in expr && expr.AllOf.every(isSatisfied)) || ('AnyOf' in expr && expr.AnyOf.some(isSatisfied));
   };
 
   return isSatisfied(expression);
@@ -268,8 +266,8 @@ exports.satisfiesExpression = function(scopeset, expression) {
  *
  * Returns undefined if the scopeset does not satisfy the expression.
  */
-exports.scopesSatisfying = (scopeset, expression) => {
-  let used = [];
+const scopesSatisfying = (scopeset, expression) => {
+  const used = [];
   /* Evaluate the given expression, appending all used scopes to `scopes` and
    * returning true if satisfied, otherwise returning false and leaving `scopes`
    * as it was found.
@@ -284,8 +282,8 @@ exports.scopesSatisfying = (scopeset, expression) => {
     }
 
     if ('AllOf' in expr) {
-      let startIndex = used.length;
-      for (let subexpr of expr.AllOf) {
+      const startIndex = used.length;
+      for (const subexpr of expr.AllOf) {
         if (!recurse(subexpr)) {
           // does not match the AllOf, so bail out now and do not return any of
           // the accumulated scopes
@@ -297,9 +295,9 @@ exports.scopesSatisfying = (scopeset, expression) => {
     }
 
     if ('AnyOf' in expr) {
-      let startIndex = used.length;
+      const startIndex = used.length;
       let found = false;
-      for (let subexpr of expr.AnyOf) {
+      for (const subexpr of expr.AnyOf) {
         found = recurse(subexpr) || found;
       }
       if (!found) {
@@ -332,8 +330,8 @@ exports.scopesSatisfying = (scopeset, expression) => {
  * are definitely needed to satisfy the expression and at least
  * one of the scopes under an AnyOf must be provided to satisfy.
  */
-exports.removeGivenScopes = function(scopeset, expression) {
-  const simplify = (expr) => {
+const removeGivenScopes = function (scopeset, expression) {
+  const simplify = expr => {
     if (typeof expr === 'string') {
       if (scopeset.some(s => patternMatch(s, expr))) {
         return null;
@@ -374,7 +372,7 @@ exports.removeGivenScopes = function(scopeset, expression) {
 
 const flatten = arrays => arrays.reduce((acc, array) => acc.concat(array), []);
 
-exports.simplifyScopeExpression = scopeExpression => {
+const simplifyScopeExpression = scopeExpression => {
   // checking that the expression is valid simplifies the conditionals below
   if (!validateExpression(scopeExpression)) {
     throw new Error('Cannot simplify invalid scope expression');
@@ -397,7 +395,7 @@ exports.simplifyScopeExpression = scopeExpression => {
         anyOfs = flatten(anyOfs.map(e => e.AnyOf));
       }
 
-      let subexprs = [...scopes, ...anyOfs, ...allOfs];
+      const subexprs = [...scopes, ...anyOfs, ...allOfs];
       if (subexprs.length === 1) {
         return subexprs[0];
       }
@@ -417,7 +415,7 @@ exports.simplifyScopeExpression = scopeExpression => {
         allOfs = flatten(allOfs.map(e => e.AllOf));
       }
 
-      let subexprs = [...scopes, ...anyOfs, ...allOfs];
+      const subexprs = [...scopes, ...anyOfs, ...allOfs];
       if (subexprs.length === 1) {
         return subexprs[0];
       }
@@ -429,16 +427,16 @@ exports.simplifyScopeExpression = scopeExpression => {
 };
 
 // utility functions for simplifyScopeExpression
-const isScope = exports.simplifyScopeExpression.isScope = exp => typeof exp === 'string';
-const isAnyOf = exports.simplifyScopeExpression.isAnyOf = exp => exp.AnyOf;
-const isAllOf = exports.simplifyScopeExpression.isAllOf = exp => exp.AllOf;
+const isScope = exp => typeof exp === 'string';
+const isAnyOf = exp => exp.AnyOf;
+const isAllOf = exp => exp.AllOf;
 
-const divideSubexpressions = exports.simplifyScopeExpression.divideSubexpressions = subexprs => {
+const divideSubexpressions = subexprs => {
   const scopes = new Set();
   const anyOfs = new Map();
   const allOfs = new Map();
 
-  for (let e of subexprs) {
+  for (const e of subexprs) {
     if (isScope(e)) {
       scopes.add(e);
     } else if (isAnyOf(e)) {
@@ -452,4 +450,24 @@ const divideSubexpressions = exports.simplifyScopeExpression.divideSubexpression
     anyOfs: [...anyOfs.values()],
     allOfs: [...allOfs.values()],
   };
+};
+
+simplifyScopeExpression.isScope = isScope;
+simplifyScopeExpression.isAnyOf = isAnyOf;
+simplifyScopeExpression.isAllOf = isAllOf;
+simplifyScopeExpression.divideSubexpressions = divideSubexpressions;
+
+module.exports = {
+  validScope,
+  scopeIntersection,
+  scopeUnion,
+  patternMatch,
+  scopeCompare,
+  normalizeScopeSet,
+  mergeScopeSets,
+  validExpression,
+  satisfiesExpression,
+  scopesSatisfying,
+  removeGivenScopes,
+  simplifyScopeExpression,
 };
