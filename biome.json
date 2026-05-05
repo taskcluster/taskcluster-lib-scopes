@@ -1,0 +1,25 @@
+{
+  "$schema": "https://biomejs.dev/schemas/2.4.14/schema.json",
+  "files": {
+    "includes": ["src/**/*.js", "test/**/*.js"]
+  },
+  "formatter": {
+    "indentStyle": "space",
+    "lineWidth": 120,
+    "bracketSpacing": false
+  },
+  "javascript": {
+    "formatter": {
+      "quoteStyle": "single",
+      "arrowParentheses": "asNeeded"
+    },
+    "globals": ["suite", "test"]
+  },
+  "linter": {
+    "rules": {
+      "complexity": {
+        "useArrowFunction": "off"
+      }
+    }
+  }
+}
