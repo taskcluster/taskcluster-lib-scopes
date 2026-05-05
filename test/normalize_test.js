@@ -27,7 +27,7 @@ suite(path.basename(__filename), function() {
           if (i === j) {
             return;
           }
-          let exp = cmp(i, j);
+          const exp = cmp(i, j);
           test(`${title} - ${scopes[i]} ${SYMBOLIC[exp]} ${scopes[j]}`, () => {
             assert.equal(
               SYMBOLIC[utils.scopeCompare(scopes[i], scopes[j])],

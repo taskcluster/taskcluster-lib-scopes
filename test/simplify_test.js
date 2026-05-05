@@ -98,7 +98,7 @@ suite(path.basename(__filename), function() {
         // check that for all scopesets involving the mentioned scopes,
         // the two expressions are equivalent.  This should catch any
         // invalid simplifications
-        for (let scopeset of combinations(extractScopes(input))) {
+        for (const scopeset of combinations(extractScopes(input))) {
           assert.equal(
             utils.satisfiesExpression(scopeset, input),
             utils.satisfiesExpression(scopeset, output),
