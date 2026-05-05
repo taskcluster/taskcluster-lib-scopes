@@ -1,3 +1,4 @@
+const {suite, test} = require('node:test');
 const utils = require('../src');
 const path = require('node:path');
 const assert = require('node:assert').strict;

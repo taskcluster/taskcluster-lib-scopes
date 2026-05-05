@@ -1,3 +1,4 @@
+const {suite, test} = require('node:test');
 const assert = require('node:assert');
 const utils = require('../src/expressions.js');
 

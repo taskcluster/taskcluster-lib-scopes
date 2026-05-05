@@ -1,3 +1,4 @@
+const {suite, test} = require('node:test');
 const assert = require('node:assert');
 const path = require('node:path');
 const {
