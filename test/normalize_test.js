@@ -90,7 +90,7 @@ suite(path.basename(__filename), function() {
 
   suite('scope sorting', function() {
     const testSortScopes = ({title, scopes, expected, N}) => {
-      title = title || 'sort scopes ' + scopes.join(',');
+      title = title || `sort scopes ${scopes.join(',')}`;
       test(title, () => {
         _.range(N || 50).forEach(() => {
           scopes = _.shuffle(scopes);
@@ -218,7 +218,7 @@ suite(path.basename(__filename), function() {
 
   suite('scopeset merging', function() {
     const testMergeScopeSets = (title, {scopesA, scopesB, expected, N}) => {
-      test('mergeScopeSets (' + title + ')', () => {
+      test(`mergeScopeSets (${title})`, () => {
         _.range(N || 50).forEach(() => {
           scopesA.sort(utils.scopeCompare);
           scopesB.sort(utils.scopeCompare);

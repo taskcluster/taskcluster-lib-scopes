@@ -94,7 +94,7 @@ suite(path.basename(__filename), function() {
         assert.deepEqual(utils.simplifyScopeExpression(input), output);
       });
 
-      test(name + ' - equivalency', function() {
+      test(`${name} - equivalency`, function() {
         // check that for all scopesets involving the mentioned scopes,
         // the two expressions are equivalent.  This should catch any
         // invalid simplifications
