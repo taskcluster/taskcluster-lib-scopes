@@ -1,6 +1,6 @@
 const utils = require('../src');
-const path = require('path');
-const assert = require('assert');
+const path = require('node:path');
+const assert = require('node:assert');
 const _ = require('lodash');
 
 suite(path.basename(__filename), function() {

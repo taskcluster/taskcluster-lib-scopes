@@ -1,6 +1,6 @@
-const assert = require('assert');
+const assert = require('node:assert');
 const utils = require('../src');
-const path = require('path');
+const path = require('node:path');
 
 suite(path.basename(__filename), function() {
   test('Normal-looking scopes are OK', function() {

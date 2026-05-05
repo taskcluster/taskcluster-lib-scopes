@@ -1,4 +1,4 @@
-const assert = require('assert');
+const assert = require('node:assert');
 const utils = require('../src/expressions.js');
 
 suite('benchmark scopesSatisfying', function() {
